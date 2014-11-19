@@ -4,6 +4,7 @@ Display a report of the size and Gzipped size of your project and trigger alarms
 
 Inspired by [gulp-size](https://github.com/sindresorhus/gulp-size) by [Sindre Sorhus](http://sindresorhus.com).
 
+![Screenshot](https://raw.githubusercontent.com/jaysalvat/gulp-sizereport/master/screenshot.png)
 
 ## Install
 
