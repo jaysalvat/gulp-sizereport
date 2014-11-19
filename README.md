@@ -23,3 +23,37 @@ gulp.task('sizereport', function () {
 		.pipe(sizereport());
 });
 ```
+
+```sh
+$ gulp sizereport
+```
+
+### Usage with alerts
+
+```js
+var gulp = require('gulp');
+var sizereport = require('gulp-sizereport');
+
+gulp.task('sizereport', function () {
+    return gulp.src('./dist/*')
+        .pipe(sizereport({
+            '*': {
+                'maxSize': 20000,
+                'maxGzippedSize': 15000
+            },
+            'file1.js': {
+                'maxSize': 10000
+            },
+            'file2.js': {
+                'maxSize': 10000,
+                'maxGzippedSize': 5000
+            },
+            'maxTotalSize': 20000,
+            'maxTotalGzippedSize': 10000
+        }));
+});
+```
+
+```sh
+$ gulp sizereport
+```
