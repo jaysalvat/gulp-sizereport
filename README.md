@@ -1,5 +1,7 @@
 # gulp-sizereport
 
+[![npm version](https://badge.fury.io/js/gulp-sizereport.svg)](http://badge.fury.io/js/gulp-sizereport)
+
 Display a report of the size and Gzipped size of your project and trigger alarms when the sizes are higher than expected.
 
 Inspired by [gulp-size](https://github.com/sindresorhus/gulp-size) by [Sindre Sorhus](http://sindresorhus.com).
