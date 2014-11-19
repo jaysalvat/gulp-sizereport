@@ -1,0 +1,40 @@
+{
+  "name": "gulp-sizereport",
+  "version": "1.0.0",
+  "description": "Display the size and gzipped size of your project, trigger alarm when file size is higher as expected",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaysalvat/gulp-sizereport"
+  },
+  "author": {
+    "name": "Jay Salvat",
+    "url": "http://jaysalvat.com"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "gulpplugin",
+    "report",
+    "filesize",
+    "file",
+    "size",
+    "log",
+    "measure",
+    "inspect",
+    "debug",
+    "gzip"
+  ],
+  "dependencies": {
+    "chalk": "^0.5.1",
+    "cli-table": "^0.3.1",
+    "gulp-util": "^3.0.0",
+    "gzip-size": "^1.0.0",
+    "pretty-bytes": "^1.0.1",
+    "through2": "^0.6.1"
+  }
+}
