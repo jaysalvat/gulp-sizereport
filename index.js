@@ -1,84 +1,129 @@
-var gutil   	= require('gulp-util'),
-	through 	= require('through2'),
-	chalk    	= require('chalk'),
-	prettyBytes = require('pretty-bytes'),
-	gzippedSize = require('gzip-size'),
-	Table 		= require('cli-table');
+var gutil       = require('gulp-util'),
+    through     = require('through2'),
+    chalk       = require('chalk'),
+    prettyBytes = require('pretty-bytes'),
+    gzipSize     = require('gzip-size'),
+    Table       = require('cli-table');
 
 module.exports = function (options) {
-	"use strict";
+    "use strict";
 
-	options = options || {};
+    options          = options || {};
+    options.gzip     = (options.gzip     !== undefined) ? options.gzip     : false;
+    options.minifier = (options.minifier !== undefined) ? options.minifier : null;
 
-	var fileCount = 0,
-		totalSize = 0,
-		totalGzippedSize = 0,
-		table = new Table({
-		    head: 	   [ 'File', 'Size', 'Gzipped size' ],
-		    colWidths: [ 30, 15, 15 ],
-		    colAligns: [ 'left', 'right', 'right' ],
-		    style: {
-		    	head:  [ 'cyan' ]
-		    }
-		});
+    var tableHeadCols = [
+        'File',
+        'Original'
+    ];
+    if (options.gzip) {
+        tableHeadCols.push('Gzipped');
+    }
+    if (options.minifier) {
+        tableHeadCols.push('Minified');
+        if (options.gzip) {
+            tableHeadCols.push('Gzipped');
+        }
+    }
 
-	var getSizeToDisplay = function (size, key, filename) {
-		var max = options[filename] || options['*'],
-			value;
+    var fileCount = 0,
+        totalSize = 0,
+        totalGzippedSize = 0,
+        totalMinifiedSize = 0,
+        totalMinifiedGzippedSize = 0,
+        gzippedSize,
+        minifiedGzippedSize,
+        minified,
+        table = new Table({
+            head:      tableHeadCols,
+            //colWidths: [ 30, 12, 12, 12, 12 ],
+            colAligns: [ 'left', 'right', 'right', 'right', 'right' ],
+            style: {
+                head:  [ 'cyan' ]
+            }
+        });
 
-		if (max) {
-			value = max[key];
-		} else {
-			value = options[key];
-		}
+    var getSizeToDisplay = function (size, key, filename) {
+        var max = options[filename] || options['*'],
+            value;
 
-		if (value && size > value) {
-			gutil.beep();
+        if (max) {
+            value = max[key];
+        } else {
+            value = options[key];
+        }
 
-			return chalk.red(prettyBytes(size));
-		}
+        if (value && size > value) {
+            gutil.beep();
 
-		return prettyBytes(size);
-	};
+            return chalk.red(prettyBytes(size));
+        }
 
-	return through.obj(function (file, enc, callback) {
-		if (file.isNull()) {
-			callback(null, file);
-			return;
-		}
+        return prettyBytes(size);
+    };
 
-		if (file.isStream()) {
-			callback(new gutil.PluginError('gulp-size', 'Streaming not supported'));
-			return;
-		}
+    return through.obj(function (file, enc, callback) {
+        if (file.isNull()) {
+            callback(null, file);
+            return;
+        }
 
-		var finish = function (err, gzippedSize) {
-			totalSize        += file.contents.length;
-			totalGzippedSize += gzippedSize;
-			fileCount ++;
+        if (file.isStream()) {
+            callback(new gutil.PluginError('gulp-size', 'Streaming not supported'));
+            return;
+        }
 
-			table.push([ 
-				file.relative, 
-				getSizeToDisplay(file.contents.length, 'maxSize', file.relative), 
-				getSizeToDisplay(gzippedSize, 'maxGzippedSize', file.relative)
-			]);
+        gzippedSize       = gzipSize.sync(file.contents);
+        totalSize        += file.contents.length;
+        totalGzippedSize += gzippedSize;
+        fileCount ++;
 
-			callback(null, file);
-		};
+        var row = [ 
+            file.relative,
+            getSizeToDisplay(file.contents.length, 'maxSize', file.relative)
+        ];
 
-		gzippedSize(file.contents, finish);
+        if (options.gzip) {
+            row.push(getSizeToDisplay(gzippedSize, 'maxGzippedSize', file.relative));
+        }
+        if (typeof options.minifier === 'function') {
+            minified           = options.minifier('' + file.contents);
+            totalMinifiedSize += minified.length;
 
-	}, function (callback) {
-		if (fileCount > 0) {
-			table.push([
-			   '', 
-	           chalk.bold(getSizeToDisplay(totalSize, 'maxTotalSize', '*')),
-	           chalk.bold(getSizeToDisplay(totalGzippedSize, 'maxTotalGzippedSize', '*'))
-			]);
+            row.push(getSizeToDisplay(minified.length, 'maxMinifiedSize', file.relative));
 
-			console.log(table.toString());
-		}
+            if (options.gzip) {
+                minifiedGzippedSize       = gzipSize.sync(minified);
+                totalMinifiedGzippedSize += minifiedGzippedSize;
+                row.push(getSizeToDisplay(minifiedGzippedSize, 'maxMinifiedGzippedSize', file.relative));
+            }
+        }
+        table.push(row);
 
-		callback();
-	});
+        callback(null, file);
+
+    }, function (callback) {
+        if (fileCount > 0) {
+            var row = [
+                '',
+                chalk.bold(getSizeToDisplay(totalSize, 'maxTotalSize', '*'))
+            ];
+
+            if (options.gzip) {
+                row.push(chalk.bold(getSizeToDisplay(totalSize, 'maxTotalGzippedSize', '*')));
+            }
+            if (options.minifier) {
+                row.push(chalk.bold(getSizeToDisplay(totalMinifiedSize, 'maxTotalMinifiedSize', '*')));    
+
+                if (options.gzip) {
+                    row.push(chalk.bold(getSizeToDisplay(totalMinifiedGzippedSize, 'maxTotalMinifiedGzippedSize', '*')));                        
+                }
+            }
+            table.push(row);
+
+            console.log(table.toString());
+        }
+
+        callback();
+    });
 };

@@ -4,9 +4,7 @@
 
 Display a report of the size and Gzipped size of your project and trigger alarms when the sizes are higher than expected.
 
-Inspired by [gulp-size](https://github.com/sindresorhus/gulp-size) by [Sindre Sorhus](http://sindresorhus.com).
-
-![Screenshot](https://raw.githubusercontent.com/jaysalvat/gulp-sizereport/master/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/jaysalvat/gulp-sizereport/master/screenshot0.png)
 
 ## Install
 
@@ -15,6 +13,8 @@ $ npm install --save-dev gulp-sizereport
 ```
 
 ## Usage
+
+A simple usage
 
 ```js
 var gulp = require('gulp');
@@ -26,36 +26,78 @@ gulp.task('sizereport', function () {
 });
 ```
 
-```sh
-$ gulp sizereport
+![Screenshot](https://raw.githubusercontent.com/jaysalvat/gulp-sizereport/master/screenshot1.png)
+
+## Options
+
+- ``gzip`` (default: false)
+Toggle the Gzipped size column.
+
+![Screenshot](https://raw.githubusercontent.com/jaysalvat/gulp-sizereport/master/screenshot2.png)
+
+- ``minifier`` (default: null)
+You can add a minifier in order to control the minified size of your source.
+
+```js
+    var gulp = require('gulp');
+    var sizereport = require('gulp-sizereport');
+    var UglifyJS = require('uglify-js');
+
+    gulp.task('sizereport', function () {
+        return gulp.src('./src/**/*.js')
+            .pipe(sizereport({
+                minifier: function (contents) {
+                    return UglifyJS.minify(contents, { fromString: true }).code;
+                }
+            }));
+    });
 ```
 
-### Usage with alerts
+![Screenshot](https://raw.githubusercontent.com/jaysalvat/gulp-sizereport/master/screenshot3.png)
+
+Ideal to control the project size on the fly.
+
+```js
+    gulp.task('watch', function () {
+        gulp.watch('./src/**/*.js', [ 'sizereport'] );
+    });
+```
+
+## Alerts
+
+You can place some alerts on values and files. The value is in Bytes.
+
+- ``maxSize``
+- ``maxGzippedSize``
+- ``maxMinifiedSize``
+- ``maxMinifiedGzippedSize``
+- ``maxTotalSize``
+- ``maxTotalGzippedSize``
+- ``maxTotalMinifiedSize``
+- ``maxTotalMinifiedGzippedSize``
 
 ```js
 var gulp = require('gulp');
 var sizereport = require('gulp-sizereport');
+var UglifyJS = require('uglify-js');
 
 gulp.task('sizereport', function () {
-    return gulp.src('./dist/*')
+    return gulp.src('./dist/*.js')
         .pipe(sizereport({
+            gzip: true,
+            minifier: function (contents) {
+                return UglifyJS.minify(contents, { fromString: true }).code;
+            },
             '*': {
-                'maxSize': 20000,
-                'maxGzippedSize': 15000
+                'maxSize': 100000
             },
-            'file1.js': {
-                'maxSize': 10000
-            },
-            'file2.js': {
-                'maxSize': 10000,
-                'maxGzippedSize': 5000
-            },
-            'maxTotalSize': 20000,
-            'maxTotalGzippedSize': 10000
+            'pin.js': {
+                'maxMinifiedSize': 5500,
+                'maxMinifiedGzippedSize': 2500 
+            }
         }));
 });
 ```
 
-```sh
-$ gulp sizereport
-```
+![Screenshot](https://raw.githubusercontent.com/jaysalvat/gulp-sizereport/master/screenshot4.png)
+
