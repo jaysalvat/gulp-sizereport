@@ -33,24 +33,36 @@ gulp.task('sizereport', function () {
 - ``gzip`` (default: false)
 Toggle the Gzipped size column.
 
+```js
+var gulp = require('gulp');
+var sizereport = require('gulp-sizereport');
+
+gulp.task('sizereport', function () {
+    return gulp.src('./dist/*')
+        .pipe(sizereport({
+            gzip: true
+        }));
+});
+```
+
 ![Screenshot](https://raw.githubusercontent.com/jaysalvat/gulp-sizereport/master/screenshot2.png)
 
 - ``minifier`` (default: null)
 You can add a minifier in order to control the minified size of your source.
 
 ```js
-    var gulp = require('gulp');
-    var sizereport = require('gulp-sizereport');
-    var UglifyJS = require('uglify-js');
+var gulp = require('gulp');
+var sizereport = require('gulp-sizereport');
+var UglifyJS = require('uglify-js');
 
-    gulp.task('sizereport', function () {
-        return gulp.src('./src/**/*.js')
-            .pipe(sizereport({
-                minifier: function (contents) {
-                    return UglifyJS.minify(contents, { fromString: true }).code;
-                }
-            }));
-    });
+gulp.task('sizereport', function () {
+    return gulp.src('./src/**/*.js')
+        .pipe(sizereport({
+            minifier: function (contents) {
+                return UglifyJS.minify(contents, { fromString: true }).code;
+            }
+        }));
+});
 ```
 
 ![Screenshot](https://raw.githubusercontent.com/jaysalvat/gulp-sizereport/master/screenshot3.png)
@@ -58,9 +70,9 @@ You can add a minifier in order to control the minified size of your source.
 Ideal to control the project size on the fly.
 
 ```js
-    gulp.task('watch', function () {
-        gulp.watch('./src/**/*.js', [ 'sizereport'] );
-    });
+gulp.task('watch', function () {
+    gulp.watch('./src/**/*.js', [ 'sizereport'] );
+});
 ```
 
 ## Alerts
