@@ -110,7 +110,7 @@ module.exports = function (options) {
             ];
 
             if (options.gzip) {
-                row.push(chalk.bold(getSizeToDisplay(totalSize, 'maxTotalGzippedSize', '*')));
+                row.push(chalk.bold(getSizeToDisplay(totalGzippedSize, 'maxTotalGzippedSize', '*')));
             }
             if (options.minifier) {
                 row.push(chalk.bold(getSizeToDisplay(totalMinifiedSize, 'maxTotalMinifiedSize', '*')));    
