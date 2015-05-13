@@ -30,6 +30,9 @@ gulp.task('sizereport', function () {
 
 ## Options
 
+- ``total`` (default: true)
+Display the last total row.
+
 - ``gzip`` (default: false)
 Toggle the Gzipped size column.
 

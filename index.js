@@ -2,7 +2,7 @@ var gutil       = require('gulp-util'),
     through     = require('through2'),
     chalk       = require('chalk'),
     prettyBytes = require('pretty-bytes'),
-    gzipSize     = require('gzip-size'),
+    gzipSize    = require('gzip-size'),
     Table       = require('cli-table');
 
 module.exports = function (options) {
@@ -11,6 +11,7 @@ module.exports = function (options) {
     options          = options || {};
     options.gzip     = (options.gzip     !== undefined) ? options.gzip     : false;
     options.minifier = (options.minifier !== undefined) ? options.minifier : null;
+    options.total    = (options.total    !== undefined) ? options.total    : true;
 
     var tableHeadCols = [
         'File',
@@ -104,22 +105,25 @@ module.exports = function (options) {
 
     }, function (callback) {
         if (fileCount > 0) {
-            var row = [
-                '',
-                chalk.bold(getSizeToDisplay(totalSize, 'maxTotalSize', '*'))
-            ];
-
-            if (options.gzip) {
-                row.push(chalk.bold(getSizeToDisplay(totalGzippedSize, 'maxTotalGzippedSize', '*')));
-            }
-            if (options.minifier) {
-                row.push(chalk.bold(getSizeToDisplay(totalMinifiedSize, 'maxTotalMinifiedSize', '*')));    
+            if (options.total === true) {
+                var row = [
+                    '',
+                    chalk.bold(getSizeToDisplay(totalSize, 'maxTotalSize', '*'))
+                ];
 
                 if (options.gzip) {
-                    row.push(chalk.bold(getSizeToDisplay(totalMinifiedGzippedSize, 'maxTotalMinifiedGzippedSize', '*')));                        
+                    row.push(chalk.bold(getSizeToDisplay(totalGzippedSize, 'maxTotalGzippedSize', '*')));
                 }
+                if (options.minifier) {
+                    row.push(chalk.bold(getSizeToDisplay(totalMinifiedSize, 'maxTotalMinifiedSize', '*')));    
+
+                    if (options.gzip) {
+                        row.push(chalk.bold(getSizeToDisplay(totalMinifiedGzippedSize, 'maxTotalMinifiedGzippedSize', '*')));                        
+                    }
+                }
+
+                table.push(row);
             }
-            table.push(row);
 
             console.log(table.toString());
         }
