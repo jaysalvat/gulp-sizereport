@@ -58,7 +58,10 @@ var UglifyJS = require('uglify-js');
 gulp.task('sizereport', function () {
     return gulp.src('./src/**/*.js')
         .pipe(sizereport({
-            minifier: function (contents) {
+            minifier: function (contents, filepath) {
+                if (filepath.match(/\.min\./g)) {
+                    return contents
+                }
                 return UglifyJS.minify(contents, { fromString: true }).code;
             }
         }));

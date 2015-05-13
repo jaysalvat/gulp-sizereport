@@ -87,7 +87,7 @@ module.exports = function (options) {
             row.push(getSizeToDisplay(gzippedSize, 'maxGzippedSize', file.relative));
         }
         if (typeof options.minifier === 'function') {
-            minified           = options.minifier('' + file.contents);
+            minified           = options.minifier('' + file.contents, file.relative);
             totalMinifiedSize += minified.length;
 
             row.push(getSizeToDisplay(minified.length, 'maxMinifiedSize', file.relative));
