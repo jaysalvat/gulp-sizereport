@@ -118,4 +118,3 @@ gulp.task('sizereport', function () {
 ```
 
 ![Screenshot](https://raw.githubusercontent.com/jaysalvat/gulp-sizereport/master/screenshot4.png)
-
