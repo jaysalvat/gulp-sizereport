@@ -1,6 +1,5 @@
 var gutil       = require('gulp-util'),
     through     = require('through2'),
-    chalk       = require('chalk'),
     prettyBytes = require('pretty-bytes'),
     gzipSize    = require('gzip-size'),
     Table       = require('cli-table');
@@ -57,7 +56,7 @@ module.exports = function (options) {
         if (value && size > value) {
             gutil.beep();
 
-            return chalk.red(prettyBytes(size));
+            return gutil.colors.red(prettyBytes(size));
         }
 
         return prettyBytes(size);
@@ -108,17 +107,17 @@ module.exports = function (options) {
             if (options.total === true) {
                 var row = [
                     '',
-                    chalk.bold(getSizeToDisplay(totalSize, 'maxTotalSize', '*'))
+                    gutil.colors.bold(getSizeToDisplay(totalSize, 'maxTotalSize', '*'))
                 ];
 
                 if (options.gzip) {
-                    row.push(chalk.bold(getSizeToDisplay(totalGzippedSize, 'maxTotalGzippedSize', '*')));
+                    row.push(gutil.colors.bold(getSizeToDisplay(totalGzippedSize, 'maxTotalGzippedSize', '*')));
                 }
                 if (options.minifier) {
-                    row.push(chalk.bold(getSizeToDisplay(totalMinifiedSize, 'maxTotalMinifiedSize', '*')));    
+                    row.push(gutil.colors.bold(getSizeToDisplay(totalMinifiedSize, 'maxTotalMinifiedSize', '*')));    
 
                     if (options.gzip) {
-                        row.push(chalk.bold(getSizeToDisplay(totalMinifiedGzippedSize, 'maxTotalMinifiedGzippedSize', '*')));                        
+                        row.push(gutil.colors.bold(getSizeToDisplay(totalMinifiedGzippedSize, 'maxTotalMinifiedGzippedSize', '*')));                        
                     }
                 }
 
