@@ -16,11 +16,14 @@ module.exports = function (options) {
         'File',
         'Original'
     ];
+
     if (options.gzip) {
         tableHeadCols.push('Gzipped');
     }
+
     if (options.minifier) {
         tableHeadCols.push('Minified');
+
         if (options.gzip) {
             tableHeadCols.push('Gzipped');
         }
@@ -86,6 +89,7 @@ module.exports = function (options) {
         if (options.gzip) {
             row.push(getSizeToDisplay(gzippedSize, 'maxGzippedSize', file.relative));
         }
+
         if (typeof options.minifier === 'function') {
             minified           = options.minifier('' + file.contents, file.relative);
             totalMinifiedSize += minified.length;
@@ -103,6 +107,11 @@ module.exports = function (options) {
         callback(null, file);
 
     }, function (callback) {
+
+        if (options.title) {
+            console.log(':: ' + gutil.colors.bold(options.title) + ' ::');
+        }
+
         if (fileCount > 0) {
             if (options.total === true) {
                 var row = [
@@ -113,6 +122,7 @@ module.exports = function (options) {
                 if (options.gzip) {
                     row.push(gutil.colors.bold(getSizeToDisplay(totalGzippedSize, 'maxTotalGzippedSize', '*')));
                 }
+
                 if (options.minifier) {
                     row.push(gutil.colors.bold(getSizeToDisplay(totalMinifiedSize, 'maxTotalMinifiedSize', '*')));    
 

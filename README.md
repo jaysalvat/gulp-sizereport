@@ -30,6 +30,9 @@ gulp.task('sizereport', function () {
 
 ## Options
 
+- ``title`` (default: null)
+Display a title above the table.
+
 - ``total`` (default: true)
 Display the last total row.
 
