@@ -1,7 +1,9 @@
-var gutil       = require('gulp-util'),
+var beeper      = require('beeper'),
+    colors      = require('ansi-colors'),
     through     = require('through2'),
     prettyBytes = require('pretty-bytes'),
     gzipSize    = require('gzip-size'),
+    PluginError = require('plugin-error');
     Table       = require('cli-table');
 
 module.exports = function (options) {
@@ -57,9 +59,9 @@ module.exports = function (options) {
         }
 
         if (value && size > value) {
-            gutil.beep();
+            beeper();
 
-            return gutil.colors.red(prettyBytes(size));
+            return colors.red(prettyBytes(size));
         }
 
         return prettyBytes(size);
@@ -72,7 +74,7 @@ module.exports = function (options) {
         }
 
         if (file.isStream()) {
-            callback(new gutil.PluginError('gulp-size', 'Streaming not supported'));
+            callback(new PluginError('gulp-size', 'Streaming not supported'));
             return;
         }
 
@@ -109,25 +111,25 @@ module.exports = function (options) {
     }, function (callback) {
 
         if (options.title) {
-            console.log(':: ' + gutil.colors.bold(options.title) + ' ::');
+            console.log(':: ' + colors.bold(options.title) + ' ::');
         }
 
         if (fileCount > 0) {
             if (options.total === true) {
                 var row = [
                     '',
-                    gutil.colors.bold(getSizeToDisplay(totalSize, 'maxTotalSize', '*'))
+                    colors.bold(getSizeToDisplay(totalSize, 'maxTotalSize', '*'))
                 ];
 
                 if (options.gzip) {
-                    row.push(gutil.colors.bold(getSizeToDisplay(totalGzippedSize, 'maxTotalGzippedSize', '*')));
+                    row.push(colors.bold(getSizeToDisplay(totalGzippedSize, 'maxTotalGzippedSize', '*')));
                 }
 
                 if (options.minifier) {
-                    row.push(gutil.colors.bold(getSizeToDisplay(totalMinifiedSize, 'maxTotalMinifiedSize', '*')));    
+                    row.push(colors.bold(getSizeToDisplay(totalMinifiedSize, 'maxTotalMinifiedSize', '*')));    
 
                     if (options.gzip) {
-                        row.push(gutil.colors.bold(getSizeToDisplay(totalMinifiedGzippedSize, 'maxTotalMinifiedGzippedSize', '*')));                        
+                        row.push(colors.bold(getSizeToDisplay(totalMinifiedGzippedSize, 'maxTotalMinifiedGzippedSize', '*')));                        
                     }
                 }
 
