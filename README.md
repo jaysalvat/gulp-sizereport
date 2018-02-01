@@ -39,6 +39,9 @@ Display the last total row.
 - ``gzip`` (default: false)
 Toggle the Gzipped size column.
 
+- ``fail`` (default: false)
+Allows you to fail your Gulp task if a file exceeds a threshold.
+
 ```js
 var gulp = require('gulp');
 var sizereport = require('gulp-sizereport');
@@ -114,7 +117,7 @@ gulp.task('sizereport', function () {
             },
             'pin.js': {
                 'maxMinifiedSize': 5500,
-                'maxMinifiedGzippedSize': 2500 
+                'maxMinifiedGzippedSize': 2500
             }
         }));
 });

@@ -13,11 +13,13 @@ module.exports = function (options) {
     options.gzip     = (options.gzip     !== undefined) ? options.gzip     : false;
     options.minifier = (options.minifier !== undefined) ? options.minifier : null;
     options.total    = (options.total    !== undefined) ? options.total    : true;
+    options.fail     = (options.fail     !== undefined) ? options.fail    : false;
 
     var tableHeadCols = [
         'File',
         'Original'
-    ];
+    ],
+    fail = false;
 
     if (options.gzip) {
         tableHeadCols.push('Gzipped');
@@ -60,6 +62,7 @@ module.exports = function (options) {
 
         if (value && size > value) {
             beeper();
+            fail = true;
 
             return colors.red(prettyBytes(size));
         }
@@ -74,7 +77,7 @@ module.exports = function (options) {
         }
 
         if (file.isStream()) {
-            callback(new PluginError('gulp-size', 'Streaming not supported'));
+            callback(new PluginError('gulp-sizereport', 'Streaming not supported'));
             return;
         }
 
@@ -83,7 +86,7 @@ module.exports = function (options) {
         totalGzippedSize += gzippedSize;
         fileCount ++;
 
-        var row = [ 
+        var row = [
             file.relative,
             getSizeToDisplay(file.contents.length, 'maxSize', file.relative)
         ];
@@ -126,10 +129,10 @@ module.exports = function (options) {
                 }
 
                 if (options.minifier) {
-                    row.push(colors.bold(getSizeToDisplay(totalMinifiedSize, 'maxTotalMinifiedSize', '*')));    
+                    row.push(colors.bold(getSizeToDisplay(totalMinifiedSize, 'maxTotalMinifiedSize', '*')));
 
                     if (options.gzip) {
-                        row.push(colors.bold(getSizeToDisplay(totalMinifiedGzippedSize, 'maxTotalMinifiedGzippedSize', '*')));                        
+                        row.push(colors.bold(getSizeToDisplay(totalMinifiedGzippedSize, 'maxTotalMinifiedGzippedSize', '*')));
                     }
                 }
 
@@ -137,6 +140,11 @@ module.exports = function (options) {
             }
 
             console.log(table.toString());
+            if (options.fail) {
+                if(fail) {
+                    callback(new new PluginError('gulp-sizereport', 'One or more file(s) exceeded the maximum size defined in options.'));
+                }
+            }
         }
 
         callback();
