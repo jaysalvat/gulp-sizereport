@@ -141,7 +141,8 @@ module.exports = function (options) {
 
             console.log(table.toString());
             if (options.fail && fail) {
-                callback(new new PluginError('gulp-sizereport', 'One or more file(s) exceeded the maximum size defined in options.'));
+                callback(new PluginError('gulp-sizereport', 'One or more file(s) exceeded the maximum size defined in options.'));
+                return;
             }
         }
 
