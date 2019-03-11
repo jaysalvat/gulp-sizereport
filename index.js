@@ -3,8 +3,10 @@ var beeper      = require('beeper'),
     through     = require('through2'),
     prettyBytes = require('pretty-bytes'),
     gzipSize    = require('gzip-size'),
-    PluginError = require('plugin-error');
-    Table       = require('cli-table');
+    PluginError = require('plugin-error'),
+    Table       = require('cli-table'),
+    fs          = require('fs'),
+    stripAnsi   = require('strip-ansi');
 
 module.exports = function (options) {
     "use strict";
@@ -13,7 +15,9 @@ module.exports = function (options) {
     options.gzip     = (options.gzip     !== undefined) ? options.gzip     : false;
     options.minifier = (options.minifier !== undefined) ? options.minifier : null;
     options.total    = (options.total    !== undefined) ? options.total    : true;
-    options.fail     = (options.fail     !== undefined) ? options.fail    : false;
+    options.fail     = (options.fail     !== undefined) ? options.fail     : false;
+    options.outputFilename = (options.outputFilename !== undefined) ? options.outputFilename : null;
+    options.outputFileFormat = (options.outputFileFormat !== undefined) ? options.outputFileFormat.toLowerCase() : 'text';
 
     var tableHeadCols = [
         'File',
@@ -114,7 +118,20 @@ module.exports = function (options) {
     }, function (callback) {
 
         if (options.title) {
-            console.log(':: ' + colors.bold(options.title) + ' ::');
+            var title = ':: ' + colors.bold(options.title) + ' ::';
+            console.log(title);
+
+            if (options.outputFilename) {
+                if (options.outputFileFormat === 'md') {
+                    title = '## ' + options.title;
+                }
+
+                fs.writeFile(options.outputFilename, stripAnsi(title.toString()) + "\n", { flag: 'a'}, function(err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
         }
 
         if (fileCount > 0) {
@@ -140,6 +157,46 @@ module.exports = function (options) {
             }
 
             console.log(table.toString());
+            if (options.outputFilename) {
+
+                var tableToWrite = table;
+
+                if (options.outputFileFormat === 'md') {
+                    var mdTable = new Table({
+                        head: tableHeadCols,
+                        chars: {
+                            'top-left': '', 'top': '', 'top-mid': '', 'top-right': '',
+                            'left-mid': '', 'mid': '', 'mid-mid': '', 'right-mid': '',
+                            'bottom-left': '', 'bottom': '', 'bottom-mid': '', 'bottom-right': '',
+                            'left': '|', 'middle': '|', 'right': '|'
+                        }
+                    });
+
+                    var sepRow = [].concat(tableHeadCols);
+                    sepRow[0] = ':---';
+                    sepRow.fill('---:', 1);
+
+                    mdTable.push(sepRow);
+
+                    table.slice(0).forEach(function(row) {
+                        if (row[0] === '') {
+                            for (var i = 1; i < row.length; i++) {
+                                row[i] = '**' + row[i] + '**';
+                            }
+                        }
+                        mdTable.push(row);
+                    });
+
+                    tableToWrite = mdTable;
+                }
+
+                fs.writeFile(options.outputFilename, stripAnsi(tableToWrite.toString()) + "\n\n", { flag: 'a'}, function(err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
+
             if (options.fail && fail) {
                 callback(new PluginError('gulp-sizereport', 'One or more file(s) exceeded the maximum size defined in options.'));
                 return;

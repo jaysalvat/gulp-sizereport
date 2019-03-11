@@ -87,6 +87,24 @@ gulp.task('watch', function () {
 });
 ```
 
+- ``outputFilename`` (default: null) Specify a filename to output your report to.
+- ``outputFileFormat`` (default: text) Specify the format of the output report. Valid values are `text` and `md`.
+
+If the file already exists, the report is appended in order to write multiple reports to one file.
+
+```js
+var gulp = require('gulp');
+var sizereport = require('gulp-sizereport');
+
+gulp.task('sizereport', function () {
+    return gulp.src('./dist/*')
+        .pipe(sizereport({
+            outputFilename: './dist/sizereport.md',
+            outputFileFormat: 'md'
+        }));
+});
+```
+
 ## Alerts
 
 You can place some alerts on values and files. The value is in Bytes.
